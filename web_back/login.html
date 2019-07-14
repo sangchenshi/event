@@ -64,8 +64,8 @@
                 // 阻止默认跳转
                 e.preventDefault();
                 // 获取用户输入的账号和密码
-                var userName = $(".input_txt").val();
-                var password = $(".input_pass").val();
+                var userName = $(".input_txt").val().trim();
+                var password = $(".input_pass").val().trim();
                 // 判断用户名和密码是否为空
                 if (userName == "" || password == "") {
                     // alert("输入内容为空，请重新输入");

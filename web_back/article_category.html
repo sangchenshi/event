@@ -91,11 +91,11 @@
                     <form>
                         <div class="form-group">
                             <label for="recipient-name" class="control-label">分类名称:</label>
-                            <input type="text" class="form-control" id="recipient-name">
+                            <input type="text" class="form-control recipient-name" id="recipient-name">
                         </div>
                         <div class="form-group">
                             <label for="message-text" class="control-label">分类别名:</label>
-                            <input type="text" class="form-control" id="recipient-name">
+                            <input type="text" class="form-control recipient-slug" id="recipient-name">
                         </div>
                     </form>
                 </div>
@@ -108,6 +108,7 @@
     </div>
     <script src="./js/jquery-1.12.4.min.js"></script>
     <script src="./js/template-web.js"></script>
+    <!-- 默认文章分类详细信息模板 -->
     <script type="text/html" id="temp-article">
         {{each data v}}
         <tr>
@@ -122,23 +123,77 @@
         {{/each}}
 
       </script>
+    <!-- 新增文章分类信息的模板 -->
+    <script type="text/html" id="temp-add">
+        <tr>
+                <td>{{name}}</td>
+                <td>{{slug}}</td>
+                <td class="text-center">
+                    <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});"
+                        class="btn btn-info btn-xs">编辑</a>
+                    <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
+                </td>
+            </tr>
+        
+    </script>
     <script>
         //   入口函数
         $(function () {
+            // 导入模板js文件
             //   文章分类页面一打开，就同步相关的数据
             $.ajax({
                 url: "http://localhost:8000/admin/category_search",
                 success: function (backData) {
                     if (backData.code == 200) {
-                        var html = template("temp-article",backData);
+                        // 调用模板引擎核心方法
+                        var html = template("temp-article", backData);
+                        // 把数据显示在页面
                         $("tbody").html(html);
 
                     }
                 }
             })
+            // 新增分类按钮的事件
+            $("#model_add").on("click", function (e) {
+                e.preventDefault();
+                // 给模态框的确认按钮添加点击事件
+                // 获取输入的分类名和别名
+                var artname = $(".recipient-name").val().trim();
+                var artslug = $(".recipient-slug").val().trim();
+                $.ajax({
+                    type: "post",
+                    url: "http://localhost:8000/admin/category_add",
+                    data: {
+                        name: artname,
+                        slug: artslug,
+                    },
+                    success: function (backData) {
+                        console.log(backData);
+                        
+                        if (backData.code == 200) {
+                            // 刷新页面
+                            // location.reload();  //这种页面会闪，用户体验不好
+                            // 不刷新，重新请求一次数据，性能不高
+                            // 直接操作DOM树
+                            var obj = {
+                                name:artname,
+                                slug:artslug,
+
+                            }
+                            var html = template("temp-add",backData.obj);
+                            // 给确认按钮注册点击事件
+                           
+                            $("tbody").append(html);
+                        }
+                    }
+                });
+                // $("#addModal").modal("hide");
+
+            })
 
 
         })
+
     </script>
 
     <!-- <script>
