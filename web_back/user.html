@@ -60,39 +60,109 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success">修改</button>
+                        <button type="submit" class="btn btn-success btn-edit">修改</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-    <script src="./js/jquery-1.12.4.min.js"></script>
+    <!-- 模态框 modal -->
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">温馨警告!!!</h4>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary btn-confirm">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./js/bootstrap/js/bootstrap.min.js"></script>
+
     <script>
         $(function () {
             var username = $(".username").val();
             var nickname = $("nickname").val();
             var email = $(".email").val();
             var password = $(".password").val();
+            // 本地图片预览
+            // 为修改图片图标绑定change事件
             $("#exampleInputFile").change(function (e) {
+                // 阻止按钮的默认行为
                 e.preventDefault();
+                // 找到图片的临时路径，files是dom元素的属性 this.files[0]获取图片
                 var url = URL.createObjectURL(this.files[0]);
+                // 然后将临时url赋值给图片的src
                 $(".user_pic").attr("src", url);
             })
+            // 调用接口
+            // 一进到user.html页面，获取对应的用户信息，显示在对应的标签上
 
             $.ajax({
                 url: "http://localhost:8000/admin/userinfo_get",
                 success: function (backData) {
                     if (backData.code == 200) {
-                        $(".username").val(backData.data.username);
-                        $(".nickname").val(backData.data.nickname);
-                        $(".email").val(backData.data.email);
-                        $(".password").val(backData.data.password);
+                        // // 把对应的信息显示在对应的标签中
+                        // $(".username").val(backData.data.username);
+                        // $(".nickname").val(backData.data.nickname);
+                        // $(".email").val(backData.data.email);
+                        // $(".password").val(backData.data.password);
+                        // 以上的代码重复，通过遍历backData.data的方法代替同样的代码
+                        for(var key in backData.data) {
+                            $("."+key).val(backData.data[key]);
+                        }
                         $(".user_pic").attr("src", backData.data.user_pic);
                     }
 
 
                 }
             })
+            // 保存修改内容
+            // 给保存按钮注册点击事件
+            $(".btn-edit").on("click", function (e) {
+                // 阻止按钮的默认行为
+                e.preventDefault();
+                // 实例化formData
+                var formData = new FormData($("form")[0]);
+                $.ajax({
+                    type: "post",
+                    url: "http://localhost:8000/admin/userinfo_edit",
+                    data: formData,
+                    contentType:false,//不设置表头
+                    processData:false,//不把数据变成字符串
+                    success: function (backData) {
+                        if (backData.code == 200) {
+                            $('#myModal').modal({
+                                keyboard: true //键盘上的 esc 键被按下时关闭模态框
+                            })
+                            // 通过动态的方式添加提示信息
+                            $(".modal-body").text("修改成功，是否返回主页");
+                            // 给模态框的确认按钮注册事件
+                            $(".btn-confirm").on("click", function (e) {
+                                e.preventDefault();
+                                window.location.load;
+                                // 将对应的名字和头像显示在对应的标签中
+                                parent.$(".user_info>img").attr("src", backData.data.user_pic);
+                                parent.$(".user_info>span").html("欢迎&nbsp;&nbsp;" + backData.data.nickname);
+                                parent.$(".user_center_link>img").attr("src", backData.data.user_pic);
+
+                            })
+                        }
+
+                    }
+                })
+
+            })
+
         })
     </script>
 </body>
