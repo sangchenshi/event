@@ -45,7 +45,12 @@
                     <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
                     <div class="col-sm-10">
                         <img src="images/2.jpg" alt="" class="user_pic">
-                        <input type="file" name="user_pic" id="exampleInputFile">
+                        <input type="file" name="user_pic" id="exampleInputFile" style="display: none;">
+                        <br>
+                        <!-- 美化图片上传按钮 用label标签将img包裹起来，并且label标签指向之前的上传按钮，将之前的上传按钮隐藏 -->
+                        <label for="exampleInputFile">
+                            <img src="./images/uploadFileIcon.png" alt="">
+                        </label>
                     </div>
                 </div>
 
