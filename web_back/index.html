@@ -106,15 +106,16 @@
     <script src="./js/jquery-1.12.4.min.js"></script>
     <script>
      $(function(){
+        //  获取登录人员的个人信息
          $.ajax({
              url:"http://localhost:8000/admin/getuser",
              success:function(backData){
-                 
+                //  判断数据是否请求成功
                 if(backData.code==200){
-                
+                    // 将对应的名字和头像显示在对应的标签中
                     $(".user_info>img").attr("src",backData.data.user_pic);
                     $(".user_info>span").html("欢迎&nbsp;&nbsp;"+backData.data.nickname);
-                    $(".user_center_link").attr("src",backData.data.user_pic);
+                    $(".user_center_link>img").attr("src",backData.data.user_pic);
 
                 }else {
                     alert("数据请求出错");
@@ -123,8 +124,11 @@
              }
 
          })
+        //  退出功能
+        // 给退出按钮设置点击事件
          $(".icon-tuichu").parent().on("click",function(e){
             e.preventDefault();
+            // 发送请求
             $.ajax({
                 type:"post",
                 url:"http://localhost:8000/admin/logout",
