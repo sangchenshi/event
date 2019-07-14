@@ -103,6 +103,38 @@
         }
 
     </script>
+    <script src="./js/jquery-1.12.4.min.js"></script>
+    <script>
+     $(function(){
+         $.ajax({
+             url:"http://localhost:8000/admin/getuser",
+             success:function(backData){
+                 
+                if(backData.code==200){
+                
+                    $(".user_info>img").attr("src",backData.data.user_pic);
+                    $(".user_info>span").html("欢迎&nbsp;&nbsp;"+backData.data.nickname);
+                    $(".user_center_link").attr("src",backData.data.user_pic);
+
+                }else {
+                    alert("数据请求出错");
+                }
+
+             }
+
+         })
+         $(".icon-tuichu").parent().on("click",function(e){
+            e.preventDefault();
+            $.ajax({
+                type:"post",
+                url:"http://localhost:8000/admin/logout",
+                success:function(){
+                    window.location.href = "login.html";
+                }
+            })
+         })
+     })
+    </script>
 
 </body>
 </html>
