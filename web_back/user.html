@@ -122,8 +122,8 @@
                         // $(".email").val(backData.data.email);
                         // $(".password").val(backData.data.password);
                         // 以上的代码重复，通过遍历backData.data的方法代替同样的代码
-                        for(var key in backData.data) {
-                            $("."+key).val(backData.data[key]);
+                        for (var key in backData.data) {
+                            $("." + key).val(backData.data[key]);
                         }
                         $(".user_pic").attr("src", backData.data.user_pic);
                     }
@@ -142,8 +142,8 @@
                     type: "post",
                     url: "http://localhost:8000/admin/userinfo_edit",
                     data: formData,
-                    contentType:false,//不设置表头
-                    processData:false,//不把数据变成字符串
+                    contentType: false,//不设置表头
+                    processData: false,//不把数据变成字符串
                     success: function (backData) {
                         if (backData.code == 200) {
                             // 修改成功
@@ -156,11 +156,29 @@
                             $(".btn-confirm").on("click", function (e) {
                                 e.preventDefault();
                                 // 刷新父页面
-                                parent.location.reload();  
-                                // 将对应的名字和头像显示在对应的标签中
-                                parent.$(".user_info>img").attr("src", backData.data.user_pic);
-                                parent.$(".user_info>span").html("欢迎&nbsp;&nbsp;" + backData.data.nickname);
-                                parent.$(".user_center_link>img").attr("src", backData.data.user_pic);
+                                // parent.location.reload();
+                                // 再次发送ajax请求，获取用户信息，显示在父窗口对应的标签中
+                                //  获取登录人员的个人信息
+                                $.ajax({
+                                    url: "http://localhost:8000/admin/getuser",
+                                    success: function (backData) {
+                                        //  判断数据是否请求成功
+                                        if (backData.code == 200) {
+                                            // 将对应的名字和头像显示在对应的标签中,这里获取不到父窗口的元素，所以需要加parent
+                                            parent.$(".user_info>img").attr("src", backData.data.user_pic);
+                                            parent.$(".user_info>span").html("欢迎&nbsp;&nbsp;" + backData.data.nickname);
+                                            parent.$(".user_center_link>img").attr("src", backData.data.user_pic);
+
+                                        } else {
+                                            alert("数据请求出错");
+                                        }
+
+                                    }
+
+                                })
+                                // 手动隐藏模态框
+                                $("#myModal").modal('hide');
+
 
                             })
                         }
