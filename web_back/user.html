@@ -131,12 +131,12 @@
 
                 }
             })
-            // 保存修改内容
+            // 保存修改用户信息的内容
             // 给保存按钮注册点击事件
             $(".btn-edit").on("click", function (e) {
                 // 阻止按钮的默认行为
                 e.preventDefault();
-                // 实例化formData
+                // 实例化formData 使用formData要保证form表单里里面获取的各项值里面有name属性
                 var formData = new FormData($("form")[0]);
                 $.ajax({
                     type: "post",
@@ -146,6 +146,7 @@
                     processData:false,//不把数据变成字符串
                     success: function (backData) {
                         if (backData.code == 200) {
+                            // 修改成功
                             $('#myModal').modal({
                                 keyboard: true //键盘上的 esc 键被按下时关闭模态框
                             })
@@ -154,7 +155,8 @@
                             // 给模态框的确认按钮注册事件
                             $(".btn-confirm").on("click", function (e) {
                                 e.preventDefault();
-                                window.location.load;
+                                // 刷新父页面
+                                parent.location.reload();  
                                 // 将对应的名字和头像显示在对应的标签中
                                 parent.$(".user_info>img").attr("src", backData.data.user_pic);
                                 parent.$(".user_info>span").html("欢迎&nbsp;&nbsp;" + backData.data.nickname);
