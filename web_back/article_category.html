@@ -72,7 +72,7 @@
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-center">
-                            <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addModal">新增分类</a>
+                            <a href="#" class="btn btn-success btnAddCate" data-toggle="modal" data-target="#addModal">新增分类</a>
                         </td>
                     </tr>
                 </tfoot>
@@ -89,13 +89,14 @@
                 </div>
                 <div class="modal-body">
                     <form>
+                        <input type="hidden" class="id" name="id">
                         <div class="form-group">
                             <label for="recipient-name" class="control-label">分类名称:</label>
-                            <input type="text" class="form-control name" id="recipient-name">
+                            <input type="text" name="name" class="form-control name" id="recipient-name">
                         </div>
                         <div class="form-group">
                             <label for="message-text" class="control-label">分类别名:</label>
-                            <input type="text" class="form-control slug" id="recipient-name">
+                            <input type="text" name="slug" class="form-control slug" id="recipient-name">
                         </div>
                     </form>
                 </div>
@@ -116,7 +117,7 @@
                 <td>{{v.name}}</td>
                 <td>{{v.slug}}</td>
                 <td class="text-center">
-                    <a data-id="{{v.id}}" class="btn btn-info btn-xs">编辑</a>
+                    <a data-id="{{v.id}}" class="btn btn-info btn-xs art-edit">编辑</a>
                     <a data-id="{{v.id}}" class="btn btn-danger btn-xs btn-delete">删除</a>
                 </td>
             </tr>
@@ -173,63 +174,132 @@
             $("#model_add").on("click", function (e) {
                 e.preventDefault();
                 // 给模态框的确认按钮添加点击事件
-                // 获取输入的分类名和别名
-                var artname = $(".name").val().trim();
-                var artslug = $(".slug").val().trim();
-                $.ajax({
-                    type: "post",
-                    url: "http://localhost:8000/admin/category_add",
-                    data: {
-                        name: artname,
-                        slug: artslug,
-                    },
-                    success: function (backData) {
-                        console.log(backData);
+                 if($(this).hasClass("btn-success")) {
+                    //serialize的使用一样的 要给form表单里面获取值得标签添加name属性.
+                    var data = $('.modal-body form').serialize();
+                    console.log(data);
+                    
+                    //    发送数据请求
+                    $.post({
+                        url: "http://localhost:8000/admin/category_edit",
+                        data:data,
+                        success: function (backData) {
+                            console.log(backData);
+                            
+                            if (backData.code == 200) {
+                                alert("修改成功");
+                                getData();
+                                $("#addModal").modal("hide");
 
-                        if (backData.code == 200) {
-                            // 刷新页面
-                            // location.reload();  //这种页面会闪，用户体验不好
-                            // 不刷新，重新请求一次数据，性能不高
-                            getData();
-                            // 直接操作DOM树
-                            // var html = template("temp-add",backData.obj);
-                            // // 给确认按钮注册点击事件
+                            }
 
-                            // $("tbody").append(html);
                         }
-                    }
-                });
-                // $("#addModal").modal("hide");
+                    })
+                } else {
+                    // 获取输入的分类名和别名
+                    var artname = $(".name").val().trim();
+                    var artslug = $(".slug").val().trim();
+                    $.ajax({
+                        type: "post",
+                        url: "http://localhost:8000/admin/category_add",
+                        data: {
+                            name: artname,
+                            slug: artslug,
+                        },
+                        success: function (backData) {
+                            console.log(backData);
+
+                            if (backData.code == 200) {
+                                // 刷新页面
+                                // location.reload();  //这种页面会闪，用户体验不好
+                                // 不刷新，重新请求一次数据，性能不高
+                                getData();
+                                // 直接操作DOM树
+                                // var html = template("temp-add",backData.obj);
+                                // // 给确认按钮注册点击事件
+
+                                // $("tbody").append(html);
+                            }
+                        }
+                    });
+
+                    $("#addModal").modal("hide");
+
+                }
+
+
+
+
+            })
+            $(".btnAddCate").on("click",function(){
+                $(".modal-title").text("新增分类");
+                // 将按钮文本改为编辑，并添加一个类名btn-success，通过类名来判断弹出什么框
+                $("#model_add").text("新增").removeClass("btn-success");
+
+            })
+            // 点击关闭按钮时，关闭模态框
+            $("#model_shutoff").on("click", function () {
+                $("#addModal").modal("hide");
+            });
+
+            // 文章分类的内容是动态生成的，编辑按钮的设置.需要委托事件
+            $("tbody").on("click",".art-edit", function (e) {
+                e.preventDefault();
+                // 弹出编辑框
+                $("#addModal").modal();
+                $(".modal-title").text("编辑分类");
+                // 将按钮文本改为编辑，并添加一个类名btn-success，通过类名来判断弹出什么框
+                $("#model_add").text("编辑").addClass("btn-success");
+                // 获取编辑框里面的各项值
+                var id = $(this).attr("data-id");
+                
+                var slug = $(this).parent().prev().text();
+               
+                var name = $(this).parent().prev().prev().text();
+                // 然后将值赋值给每一项
+                $(".modal-body .id").val(id);
+               
+                
+                $(".modal-body .name").val(name);
+                console.log($(".modal-body .name").val(name));
+                
+              
+                $(".modal-body .slug").val(slug);
 
             })
 
 
-        })
-        // 删除文章分类  先设置id值 元素是动态生成的 要使用事件委托
-        $("tbody").on("click",".btn-delete", function (e) {
-            e.preventDefault();
-            if(confirm("确认删除吗？")) {
-                var that = $(this);
-                var id = $(this).attr("data-id");
-                console.log(id);
-                
-                $.ajax({
-                    url: "http://localhost:8000/admin/article_delete",
-                    data: { 
-                        id: id 
+            // 删除文章分类  先设置id值 元素是动态生成的 要使用事件委托
+            $("tbody").on("click", ".btn-delete", function (e) {
+                e.preventDefault();
+                if (confirm("确认删除吗？")) {
+                    var that = $(this);
+                    var id = $(this).attr("data-id");
+
+                    $.ajax({
+                        type: "post",
+                        url: "http://localhost:8000/admin/category_delete",
+                        data: {
+                            id: id,
                         },
-                    success: function (backData) {
-                        if (backData.code == 200) {
-                            that.parents("tr").remove();
+                        success: function (backData) {
+                            console.log(backData);
+
+                            if (backData.code == 200) {
+                                that.parents("tr").remove();
+                            }
 
                         }
+                    })
 
-                    }
-                })
+                }
 
-            }
-           
+            })
+
+
+
         })
+
 
 
     </script>
