@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
-    <script src="js/jquery-1.12.4.min.js"></script>
-    <script src="js/bootstrap/js/bootstrap.min.js"></script>
+    <!-- <script src="./js/jquery-1.12.4.min.js"></script> -->
+
 </head>
 
 <body>
@@ -107,6 +107,7 @@
         </div>
     </div>
     <script src="./js/jquery-1.12.4.min.js"></script>
+    <script src="./js/bootstrap/js/bootstrap.min.js"></script>
     <script src="./js/template-web.js"></script>
     <!-- 默认文章分类详细信息模板 -->
     <script type="text/html" id="temp-article">
@@ -115,9 +116,8 @@
                 <td>{{v.name}}</td>
                 <td>{{v.slug}}</td>
                 <td class="text-center">
-                    <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});"
-                        class="btn btn-info btn-xs">编辑</a>
-                    <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
+                    <a data-id="{{v.id}}" class="btn btn-info btn-xs">编辑</a>
+                    <a data-id="{{v.id}}" class="btn btn-danger btn-xs btn-delete">删除</a>
                 </td>
             </tr>
         {{/each}}
@@ -129,9 +129,8 @@
                 <td>{{name}}</td>
                 <td>{{slug}}</td>
                 <td class="text-center">
-                    <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});"
-                        class="btn btn-info btn-xs">编辑</a>
-                    <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
+                    <a href="#" data-id="{{id}}" class="btn btn-info btn-xs btn-edit">编辑</a>
+                    <a href="#" data-id="{{id}}" class="btn btn-danger btn-xs">删除</a>
                 </td>
             </tr>
         
@@ -140,19 +139,19 @@
         //   入口函数
         $(function () {
             // 把请求获取文章类别的代码封装成一个函数
-            function getData(){
+            function getData() {
                 $.ajax({
-                url: "http://localhost:8000/admin/category_search",
-                success: function (backData) {
-                    if (backData.code == 200) {
-                        // 调用模板引擎核心方法
-                        var html = template("temp-article", backData);
-                        // 把数据显示在页面
-                        $("tbody").html(html);
+                    url: "http://localhost:8000/admin/category_search",
+                    success: function (backData) {
+                        if (backData.code == 200) {
+                            // 调用模板引擎核心方法
+                            var html = template("temp-article", backData);
+                            // 把数据显示在页面
+                            $("tbody").html(html);
 
+                        }
                     }
-                }
-            })
+                })
             }
             getData();
 
@@ -181,12 +180,12 @@
                     type: "post",
                     url: "http://localhost:8000/admin/category_add",
                     data: {
-                        name:artname,
-                        slug:artslug,
+                        name: artname,
+                        slug: artslug,
                     },
                     success: function (backData) {
                         console.log(backData);
-                        
+
                         if (backData.code == 200) {
                             // 刷新页面
                             // location.reload();  //这种页面会闪，用户体验不好
@@ -195,7 +194,7 @@
                             // 直接操作DOM树
                             // var html = template("temp-add",backData.obj);
                             // // 给确认按钮注册点击事件
-                           
+
                             // $("tbody").append(html);
                         }
                     }
@@ -206,6 +205,32 @@
 
 
         })
+        // 删除文章分类  先设置id值 元素是动态生成的 要使用事件委托
+        $("tbody").on("click",".btn-delete", function (e) {
+            e.preventDefault();
+            if(confirm("确认删除吗？")) {
+                var that = $(this);
+                var id = $(this).attr("data-id");
+                console.log(id);
+                
+                $.ajax({
+                    url: "http://localhost:8000/admin/article_delete",
+                    data: { 
+                        id: id 
+                        },
+                    success: function (backData) {
+                        if (backData.code == 200) {
+                            that.parents("tr").remove();
+
+                        }
+
+                    }
+                })
+
+            }
+           
+        })
+
 
     </script>
 
