@@ -267,11 +267,39 @@
 
         </div>
     </div>
+    <!-- 导入模板引擎 -->
+    <script src="./js/template-web.js"></script>
+    <script type="text/html" id="temp-catelist">
+        <option value="">所有分类</option>
+        {{each data}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
 
     <script>
         // 设置左侧菜单
         $('#release_btn').click(function(){
             window.parent.setMenu(1,1);
+        })
+        $(function(){
+            $("#selCategory").on("click",function(e){
+                e.preventDefault();
+                $.ajax({
+                    url:"http://localhost:8000/admin/category_search",
+                    success:function(backData){
+                        console.log(backData);
+                        
+                        if(backData.code == 200) {
+                            var html =template("temp-catelist",backData);
+                            console.log(html);
+                            
+                            $("#selCategory").html(html);
+
+                        }
+                    }
+                })
+
+            })
         })
     </script>
 
