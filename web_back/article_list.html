@@ -322,11 +322,10 @@
                     }
                 }
             })
-            // 点击筛选按钮，选出所有符合要求的文章
-            $("#btnSearch").on("click", function (e) {
-                e.preventDefault();
-                // 获取文章类别和状态
-                var selCategory = $("#selCategory").val();//文章类别是获取的id值
+            // 因为获取文章数据会经常使用，将其封装成函数，方便多次使用
+            function geData(mypages){
+                 // 获取文章类别和状态
+                 var selCategory = $("#selCategory").val();//文章类别是获取的id值
                 
                 var selStatus = $("#selStatus").val();//文章状态（草稿或者发布）
                 
@@ -336,7 +335,7 @@
                     data:{
                         type:selCategory,
                         state:selStatus,
-                        page:25,
+                        page:mypages,
                         perpage:5,
                     },
                     success: function (backData) {
@@ -354,9 +353,17 @@
 
                     }
                 })
+            }
+            // 点击筛选按钮，选出所有符合要求的文章
+            $("#btnSearch").on("click", function (e) {
+                e.preventDefault();
+                // 显示的是第一页，所以mypages传入1
+                geData(25);
+               
 
             })
-
+            // 一进入文章列表页面就显示所有文章
+            $("#btnSearch").trigger("click");
 
         })
     </script>
