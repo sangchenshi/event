@@ -176,8 +176,8 @@
                 e.preventDefault();
                 // 给模态框的确认按钮添加点击事件
                 // 获取输入的分类名和别名
-                var artname = $(".art-name").val().trim();
-                var artslug = $(".art-slug").val().trim();
+                var artname = $(".art-name").val();
+                var artslug = $(".art-slug").val();
                 $.ajax({
                     type: "post",
                     url: "http://localhost:8000/admin/category_add",
@@ -197,12 +197,12 @@
                             // var html = template("temp-add",backData.obj);
                             // // 给确认按钮注册点击事件
                            
-                            // $("tbody").append(html);
+                            $("tbody").append(html);
                         }
                     }
                 });
                 // $("#addModal").modal("hide");
-                $('#addModal').modal('hide');
+                // $('#addModal').modal('hide');
                  if($(this).hasClass("btn-success")) {
                     //serialize的使用一样的 要给form表单里面获取值得标签添加name属性.
                     var data = $('.modal-body form').serialize();
@@ -219,6 +219,7 @@
                                 alert("修改成功");
                                 getData();
                                 $("#addModal").modal("hide");
+                                $("#modal-backdrop").removeClass("in");
 
                             }
 
