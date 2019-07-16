@@ -411,7 +411,7 @@ body{
     height:200px;
     margin-bottom:10px;
 }
-
-
+.dateinput {width: 240px;line-height: 20px;border: 1px #ddd solid;border-radius:4px;padding: 5px;background-color: #fff;float: left; font-size: 14px;}
+.dateicon {background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAASAgMAAAA1aVZ3AAAACVBMVEUAAAD///9nyrNdI4MmAAAAAXRSTlMAQObYZgAAAChJREFUCNdjWAUCCxjg9DQgtTKBAUN8aigQJGCho6KiYDSJ8ggaYR8Ao74zAKjm+cYAAAAASUVORK5CYII="); background-repeat:no-repeat;background-position: right center;}
 
 
